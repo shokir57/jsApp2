@@ -13,4 +13,4 @@ app.set("view engine", "ejs")  // 2.arg tells which template engine we are using
 
 app.use("/", router)
 
-app.listen(3000)
+module.exports = app
