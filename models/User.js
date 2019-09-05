@@ -59,15 +59,19 @@ User.prototype.validate = function(){
     }
 }
 
-User.prototype.login = function(callback){
-    this.cleanUp()
-    usersCollection.findOne({username: this.data.username}, (err, attemptedUser) => {
-        if (attemptedUser && attemptedUser.password == this.data.password){ // here "this" keyword points to user obj because we used arrow function. Oherwise, it would point to global object which we don't want here.
-            callback("Congrats!!!")
-        }
-        else{
-            callback("Invalid username / password")
-        }
+User.prototype.login = function(){
+   return new Promise((resolve, reject) =>{
+        this.cleanUp()
+        usersCollection.findOne({username: this.data.username}).then((attemptedUser) => {
+            if (attemptedUser && attemptedUser.password == this.data.password){ // here "this" keyword points to user obj because we used arrow function. Oherwise, it would point to global object which we don't want here.
+                resolve("Congrats!!!")
+            }
+            else{
+                reject("Invalid username / password") 
+            }
+        }).catch(function(){
+            reject("Please try again later.") // something is wrong with the server or some unforseen errors that we didn't account for. MongoDB failed for some reason. Error is on our side as a developer.
+        })
     })
 }
 

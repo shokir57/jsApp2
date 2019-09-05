@@ -2,8 +2,10 @@ const User = require("../models/User")  // Dot-dot-slash is how you move one dir
 
 exports.login = function(req, res){
     let user = new User(req.body)
-    user.login(function(result){
+    user.login().then(function(result){   // "then" gets executed when Promise resolves.
         res.send(result)
+    }).catch(function(error){  // "catch" gets executed when Promise rejects.
+        res.send(error)
     })
       
 }
