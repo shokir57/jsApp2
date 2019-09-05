@@ -59,14 +59,14 @@ User.prototype.validate = function(){
     }
 }
 
-User.prototype.login = function(){
+User.prototype.login = function(callback){
     this.cleanUp()
     usersCollection.findOne({username: this.data.username}, (err, attemptedUser) => {
         if (attemptedUser && attemptedUser.password == this.data.password){ // here "this" keyword points to user obj because we used arrow function. Oherwise, it would point to global object which we don't want here.
-            console.log("Congrats!!!")
+            callback("Congrats!!!")
         }
         else{
-            console.log("Invalid username / password")
+            callback("Invalid username / password")
         }
     })
 }

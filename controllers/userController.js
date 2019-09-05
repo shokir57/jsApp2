@@ -2,7 +2,10 @@ const User = require("../models/User")  // Dot-dot-slash is how you move one dir
 
 exports.login = function(req, res){
     let user = new User(req.body)
-    user.login()
+    user.login(function(result){
+        res.send(result)
+    })
+      
 }
 
 exports.logout = function(){
