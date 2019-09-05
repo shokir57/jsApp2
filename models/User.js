@@ -59,6 +59,18 @@ User.prototype.validate = function(){
     }
 }
 
+User.prototype.login = function(){
+    this.cleanUp()
+    usersCollection.findOne({username: this.data.username}, (err, attemptedUser) => {
+        if (attemptedUser && attemptedUser.password == this.data.password){ // here "this" keyword points to user obj because we used arrow function. Oherwise, it would point to global object which we don't want here.
+            console.log("Congrats!!!")
+        }
+        else{
+            console.log("Invalid username / password")
+        }
+    })
+}
+
 User.prototype.register = function(){
     // Step #1: Validate User data. None of fields can be left empty.
     this.cleanUp()
