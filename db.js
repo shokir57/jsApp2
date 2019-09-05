@@ -1,9 +1,11 @@
+const dotenv = require("dotenv")
+dotenv.config()  // this knows to look at .env file for the required info.
 const mongodb = require("mongodb")
 
-const connectionString = "mongodb+srv://todoAppUser:todoAppUser100@cluster0-wtfzp.mongodb.net/complexApp?retryWrites=true&w=majority"
+// we created .env for connectionString due to security reasons. We install "dotenv" package too. While creating an actual App, I put .env to ignore file during uploading.
 
-mongodb.connect(connectionString, {useNewUrlParser:true, useUnifiedTopology: true}, function(err, client){
+mongodb.connect(process.env.CONNECTIONSTRING, {useNewUrlParser:true, useUnifiedTopology: true}, function(err, client){
     module.exports = client.db()  // this returns the db object we are interested in. This gives access and working with db from within any file when we just require in db.js file.
     const app = require("./app")
-    app.listen(3000)   // listening for incoming request
+    app.listen(process.env.PORT)   // listening for incoming request
 })
