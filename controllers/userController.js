@@ -4,15 +4,19 @@ exports.login = function(req, res){
     let user = new User(req.body)
     user.login().then(function(result){   // "then" gets executed when Promise resolves.
         req.session.user = {favColor: "blue", username: user.data.username}
-        res.send(result)
+        res.session.save(function(){  // we are manually saving req.session.user again, so that we can execute the function after.
+            res.redirect("/")
+        })
     }).catch(function(error){  // "catch" gets executed when Promise rejects.
         res.send(error)
     })
       
 }
 
-exports.logout = function(){
-    
+exports.logout = function(req, res){
+    req.session.destroy(function(){
+        res.redirect("/")
+    })
 }
 
 exports.register = function(req, res){
