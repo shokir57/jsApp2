@@ -1,5 +1,5 @@
 const bcrypt = require("bcryptjs")
-const usersCollection = require("../db").collection("users")  // We can perform CRUD operations on this variable.
+const usersCollection = require("../db").db().collection("users")  // We can perform CRUD operations on this variable.
 const validator = require("validator")
 
 let User = function(data) {
