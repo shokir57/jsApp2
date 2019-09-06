@@ -1,5 +1,15 @@
 const express = require("express")
+const session = require("express-session")
 const app = express()
+
+let sessionOptions = session({
+    secret: "Javascript is sooooo cool!",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {maxAge: 1000 * 60 * 60 * 24, httpOnly: true}  // 1000 * 60 * 60 * 24 sets cookie's life to expire after 1 day. 
+})
+
+app.use(sessionOptions)
 
 const router = require("./router")
 
