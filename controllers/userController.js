@@ -25,7 +25,12 @@ exports.register = function(req, res){
     let user = new User(req.body)
     user.register()
     if (user.errors.length){  // meaning that, if length>0.
-        res.send(user.errors)
+        user.errors.forEach(function(error){
+            req.flash("regErrors", error)
+        })
+        req.session.save(function(){
+            res.redirect("/")
+        })
     }
     else {
         res.send("Congrats, there is no errors.")
@@ -37,7 +42,7 @@ exports.home = function(req, res){
         res.render("home-dashboard", {username: req.session.user.username})
     }
     else {
-        res.render("home-guest", {errors: req.flash("errors")}) 
+        res.render("home-guest", {errors: req.flash("errors"), regErrors: req.flash("regErrors")}) 
     }
 }
 
