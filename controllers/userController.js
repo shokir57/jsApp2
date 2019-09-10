@@ -1,5 +1,17 @@
 const User = require("../models/User")  // Dot-dot-slash is how you move one dir up.
 
+exports.mustBeLoggedIn = function(req, res, next){
+    if (req.session.user){  // means user is logged in.
+         next()  // tells express to call next function for this route.
+    }
+    else {
+        req.flash("errors", "You must be logged in to perform that action.")
+        req.session.save(function(){
+            res.redirect("/")
+        })
+    }
+}
+
 exports.login = function(req, res){
     let user = new User(req.body)
     user.login().then(function(result){   // "then" gets executed when Promise resolves.
