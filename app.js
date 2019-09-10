@@ -15,6 +15,10 @@ let sessionOptions = session({
 app.use(sessionOptions)
 app.use(flash())
 
+app.use(function(req, res, next){
+    res.locals.user = req.session.user
+    next()
+})
 const router = require("./router")
 
 app.use(express.urlencoded({extended: false})) // boiler plate code. it tells express to add user submitted data to add to our req obj so that we can access it from "req.body".

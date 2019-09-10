@@ -53,7 +53,7 @@ exports.register = function(req, res){
 
 exports.home = function(req, res){
     if (req.session.user){
-        res.render("home-dashboard", {username: req.session.user.username, avatar: req.session.user.avatar}) // we are sending a username/avatar that is being pulled from session data.
+        res.render("home-dashboard")
     }
     else {
         res.render("home-guest", {errors: req.flash("errors"), regErrors: req.flash("regErrors")}) 
