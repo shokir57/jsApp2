@@ -54,9 +54,22 @@ Post.findSingleById = function(id){
             reject()
             return
         }
-        let post = await postsCollection.findOne({_id: new ObjectID(id)})
-        if (post){
-            resolve(post)
+        
+        let posts = await postsCollection.aggregate([
+            // aggregate lets us run multiple operations.
+            {$match: {_id: new ObjectID(id)}}, // operation number 1.
+            {$lookup: {from: "users", localField: "author", foreignField: "_id", as: "authorDocument"}}, // operation number 2.
+            // project below allows us to spell out exactly what fields we want the resulting object to have. 
+            {$project: { 
+                title: 1,  // 1 here is for True.
+                body: 1,
+                createdDate: 1,
+                author: {$arrayElemAt: ["$authorDocument", 0]}
+            }} // operation number 3.
+        ]).toArray()
+        if (posts.length){
+            console.log(posts[0])
+            resolve(posts[0])
         }
         else {
             reject()
