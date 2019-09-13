@@ -1,4 +1,5 @@
 const User = require("../models/User")  // Dot-dot-slash is how you move one dir up.
+const Post = require("../models/Post") 
 
 exports.mustBeLoggedIn = function(req, res, next){
     if (req.session.user){  // means user is logged in.
@@ -70,8 +71,16 @@ exports.ifUserExists = function(req, res, next) {
 }
 
 exports.profilePostsScreen = function(req, res) {
-    res.render("profile", {
-        profileUsername: req.profileUser.username,
-        profileAvatar: req.profileUser.avatar
+    // ask the post model for posts by a certain author id
+    Post.findByAuthorId(req.profileUser._id).then(function(posts) {
+        res.render("profile", {
+            posts: posts,
+            profileUsername: req.profileUser.username,
+            profileAvatar: req.profileUser.avatar
+        })
+
+    }).catch(function() {       
+        res.render("404")  // tech error msg
     })
+
 }
