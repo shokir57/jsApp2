@@ -17,6 +17,7 @@ router.get("/create-post", userController.mustBeLoggedIn, postController.viewCre
 router.post("/create-post", userController.mustBeLoggedIn, postController.create)
 router.get("/post/:id", postController.viewSingle) // "/:id" makes it flexible. The reason we excluded userController is bcs we wanna make post public like any Blog websites.
 router.get("/post/:id/edit", postController.viewEditScreen)
+router.post("/post/:id/edit", postController.edit)
 
 module.exports = router
  
