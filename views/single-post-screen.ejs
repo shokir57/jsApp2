@@ -21,7 +21,7 @@
       Posted by <a href="#"><%= post.author.username %></a> on <%= post.createdDate.getDate() %>/<%= post.createdDate.getMonth() + 1 %>/<%= post.createdDate.getFullYear() %></p> <!-- JS counts months starting from 0. Hence we add 1 -->
 
     <div class="body-content">
-        <%= post.body %>
+        <%- filterUserHTML(post.body) %> 
     </div>
 
   </div>
