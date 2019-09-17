@@ -1,7 +1,9 @@
 const postsCollection = require("../db").db().collection("posts")
+const followsCollection = require("../db").db().collection("follows")
 const ObjectID = require("mongodb").ObjectID  // a tool from mongodb, where we pass a string of text and it will return that as a special ObjectID object type.
 const User = require("./User")
 const sanitizeHTML = require("sanitize-html")
+
 
 let Post = function(data, userid, requestedPostId){
     this.data = data
@@ -181,6 +183,19 @@ Post.countPostByAuthor = function (id) {
         let postCount = await postsCollection.countDocuments({author: id})
         resolve(postCount)
     })
+}
+
+Post.getFeed = async function (id) {
+    // create an array of the user ids that the current user follows
+    let followedUsers = await followsCollection.find({authorId: new ObjectID(id)}).toArray()
+    followedUsers = followedUsers.map(function (followDoc) {
+        return followDoc.followedId
+    })
+    // look for posts where the author is in the above array of followed users
+    return Post.reusablePostQuery([
+        {$match: {author: {$in: followedUsers}}},
+        {$sort: {createdDate: -1}}  // -1 displays the newest post at the top.
+    ])
 }
 
 module.exports = Post
