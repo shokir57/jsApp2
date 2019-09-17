@@ -1,3 +1,5 @@
+import { isObject } from "util"
+
 export default  class Chat {
     constructor () {
         this.openedYet = false
@@ -27,7 +29,7 @@ export default  class Chat {
     }
 
     openConnection() {
-        alert("Openning the connection")
+        this.socket = io()
     }
 
     hideChat() {
