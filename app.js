@@ -51,8 +51,10 @@ const server = require("http").createServer(app)
 
 const io = require("socket.io")(server)
 
-io.on("connection", function() {
-    console.log("A new user connected!!!")
+io.on("connection", function(socket) {
+    socket.on("chatMessageFromBrowser", function (data) {  // taking the msg from a browser (socket)
+        io.emit("chatMessageFromServer", {message: data.message})  // sending the msg to all browsers (io)
+    })
 })
 
 module.exports = server
