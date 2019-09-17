@@ -48,13 +48,19 @@ app.set("view engine", "ejs")  // 2.arg tells which template engine we are using
 app.use("/", router)
 
 const server = require("http").createServer(app)
-
 const io = require("socket.io")(server)
 
+io.use(function (socket, next) {
+    sessionOptions(socket.request, socket.request.res, next)
+})
+
 io.on("connection", function(socket) {
-    socket.on("chatMessageFromBrowser", function (data) {  // taking the msg from a browser (socket)
-        io.emit("chatMessageFromServer", {message: data.message})  // sending the msg to all browsers (io)
-    })
+    if (socket.request.session.user) {
+        let user = socket.request.session.user
+        socket.on("chatMessageFromBrowser", function (data) {  // taking the msg from a browser (socket)
+            io.emit("chatMessageFromServer", {message: data.message, username: user.username, avatar: user.avatar})  // sending the msg to all browsers (io)
+        })
+    }
 })
 
 module.exports = server
