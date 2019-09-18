@@ -2,6 +2,14 @@ const User = require("../models/User")  // Dot-dot-slash is how you move one dir
 const Post = require("../models/Post") 
 const Follow = require("../models/Follow") 
 
+exports.doesUsernameExist = function (req, res) {
+    User.findByUsername(req.body.username).then(function () {
+        res.json(true)
+    }).catch(function () {
+        res.json(false)
+    })
+}
+
 exports.sharedProfileData = async function (req, res, next) {
     isVisitorsProfile = false
     let isFollowing = false
