@@ -2,18 +2,36 @@ import axios from "axios"
 
 export default class RegistrationForm {
     constructor() {
+        this.form = document.querySelector("#registration-form")
+
         this.allFields = document.querySelectorAll("#registration-form .form-control")
         this.insertValidationElements()
+
         this.username = document.querySelector("#username-register")
         this.username.previousValue = ""
+
         this.email = document.querySelector("#email-register")
         this.email.previousValue = ""
+
+        this.password = document.querySelector("#password-register")
+        this.password.previousValue = ""
+
+        // this way it's up to axios to actually run and update these two values 
+        // to true before we would ever let our form actually submit.
+        this.username.isUnique = false
+        this.email.isUnique = false
 
         this.events()
     }
 
     // Events
     events() {
+        this.form.addEventListener("submit", event => {
+            event.preventDefault()  // we don't want to let the form submit which is its default behaviour.
+            this.formSubmitHandler()
+        })
+
+        // keyup is when a key on the keyboard is pressed. 
         this.username.addEventListener("keyup", () => {
             this.isDifferent(this.username, this.usernameHandler)
         })
@@ -21,10 +39,45 @@ export default class RegistrationForm {
         this.email.addEventListener("keyup", () => {
             this.isDifferent(this.email, this.emailHandler)
         })
+
+        this.password.addEventListener("keyup", () => {
+            this.isDifferent(this.password, this.passwordHandler)
+        })
+
+        // blur is more stricter than keyup when checking the fields to assure them being okay.
+        // blur prevents the immediate Tab press after an unwanted symbol is entered in username. keyup cannot prevent immediate tab keys.  
+        this.username.addEventListener("blur", () => {
+            this.isDifferent(this.username, this.usernameHandler)
+        })
+
+        this.email.addEventListener("blur", () => {
+            this.isDifferent(this.email, this.emailHandler)
+        })
+
+        this.password.addEventListener("blur", () => {
+            this.isDifferent(this.password, this.passwordHandler)
+        })
     
     }
 
     // Methods
+    formSubmitHandler () {
+        // let's first manually run all the validation checks, in case a user submits the form before filling up his/her info.
+        this.usernameImmediately()
+        this.usernameAfterDelay()
+        this.emailAfterDelay()
+        this.passwordImmediately()
+        this.passwordAfterDelay()
+
+        // we check if everything is the way we want before submitting the form.
+        if (
+                this.username.isUnique && !this.username.errors && 
+                this.email.isUnique && !this.email.errors &&
+                !this.password.errors
+            ) {
+            this.form.submit()
+        }
+    }
 
     isDifferent(element, handler) {
         if (element.previousValue != element.value) {
@@ -40,6 +93,29 @@ export default class RegistrationForm {
         this.username.timer = setTimeout(() => this.usernameAfterDelay(), 800)
     }
 
+    passwordHandler() {
+        this.password.errors = false
+        this.passwordImmediately()
+        clearTimeout(this.password.timer)
+        this.password.timer = setTimeout(() => this.passwordAfterDelay(), 800)
+    }
+
+    passwordImmediately() {
+        if (this.password.value.length > 50) {
+            this.showValidationError(this.password, "Password cannot exceed 50 characters")
+        }
+
+        if (!this.password.errors) {
+            this.hideValidationError(this.password)
+        }
+    }
+
+    passwordAfterDelay() { 
+        if (this.password.value.length < 12) {
+            this.showValidationError(this.password, "Password must be at least 12 characters.")
+        }
+    }
+
     emailHandler() {
         this.email.errors = false
         clearTimeout(this.email.timer)
@@ -51,7 +127,7 @@ export default class RegistrationForm {
             this.showValidationError(this.email, "You must provide a valid email address.")
         }
 
-        if (this.email.errors) {
+        if (!this.email.errors) {
             axios.post("/doesEmailExist", {email: this.email.value}).then((response) => {
                 if (response.data) {
                     this.email.isUnique = false
@@ -68,7 +144,7 @@ export default class RegistrationForm {
 
     usernameImmediately() {
         if (this.username.value != "" && !/^([a-zA-Z0-9]+)$/.test(this.username.value)) {
-            this.showValidationError(this.username, "Username can only contain letter and numbers")
+            this.showValidationError(this.username, "Username can only contain letters and numbers")
         }
 
         if (this.username.value.length > 30) {
