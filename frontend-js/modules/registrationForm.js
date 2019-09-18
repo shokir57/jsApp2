@@ -25,7 +25,41 @@ export default class RegistrationForm {
     }
 
     usernameHandler() {
-        alert("username handler just ran")
+        this.username.errors = false
+        this.usernameImmediately()
+        clearTimeout(this.username.timer)
+        this.username.timer = setTimeout(() => this.usernameAfterDelay(), 3000)
+    }
+
+    usernameImmediately() {
+        if (this.username.value != "" && !/^([a-zA-Z0-9]+)$/.test(this.username.value)) {
+            this.showValidationError(this.username, "Username can only contain letter and numbers")
+        }
+
+        if (this.username.value.length > 30) {
+            this.showValidationError(this.username, "Username cannot exceed 30 characters.")
+
+        }
+
+        if (!this.username.errors) {
+            this.hideValidationError(this.username)
+        }
+    }
+
+    hideValidationError(element) {
+        element.nextElementSibling.classList.remove("liveValidateMessage--visible")
+    }
+
+    showValidationError(element, message) {
+        element.nextElementSibling.innerHTML = message
+        element.nextElementSibling.classList.add("liveValidateMessage--visible")
+        element.errors = true
+    }
+
+    usernameAfterDelay() {
+        if (this.username.value.length < 3) {
+            this.showValidationError(this.username, "Username must be at least 3 characters.")
+        }
     }
 
     insertValidationElements() {
