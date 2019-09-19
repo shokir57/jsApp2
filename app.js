@@ -55,7 +55,6 @@ app.use(function(req, res, next) {
     next()
 })
 
-// csrf code ends here
 
 app.use (function(err, req, res, next) {
     if (err) {
@@ -67,6 +66,8 @@ app.use (function(err, req, res, next) {
         }
     }
 })
+
+// csrf code ends here
 
 app.use("/", router)
 
