@@ -7,6 +7,10 @@ const csrf = require("csurf")
 const app = express()
 const sanitizeHTML = require("sanitize-html")
 
+app.use(express.urlencoded({extended: false})) // boiler plate code. it tells express to add user submitted data to add to our req obj so that we can access it from "req.body".
+app.use(express.json())  // tells to accept json data while submitting to the web. 
+
+app.use("/api", require("./router-api"))
 
 let sessionOptions = session({
     secret: "Javascript is sooooo cool!",
@@ -37,10 +41,6 @@ app.use(function(req, res, next){
     next()
 })
 const router = require("./router")
-
-app.use(express.urlencoded({extended: false})) // boiler plate code. it tells express to add user submitted data to add to our req obj so that we can access it from "req.body".
-app.use(express.json())  // tells to accept json data while submitting to the web. 
-
 
 app.use(express.static("public"))
 app.set("views", "views" ) //1.arg is Express obj. 2.arg is our folder name where we have html
