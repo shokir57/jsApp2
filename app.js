@@ -3,9 +3,10 @@ const session = require("express-session")
 const MongoStore = require("connect-mongo")(session)
 const flash = require("connect-flash")
 const markdown = require("marked")
+const csrf = require("csurf")
+const app = express()
 const sanitizeHTML = require("sanitize-html")
 
-const app = express()
 
 let sessionOptions = session({
     secret: "Javascript is sooooo cool!",
@@ -44,6 +45,28 @@ app.use(express.json())  // tells to accept json data while submitting to the we
 app.use(express.static("public"))
 app.set("views", "views" ) //1.arg is Express obj. 2.arg is our folder name where we have html
 app.set("view engine", "ejs")  // 2.arg tells which template engine we are using. ejs packg install needed to use it. npm install ejs
+
+
+// the code below is for csrf attacks protection reasons
+app.use(csrf())
+
+app.use(function(req, res, next) {
+    res.locals.csrfToken = req.csrfToken()
+    next()
+})
+
+// csrf code ends here
+
+app.use (function(err, req, res, next) {
+    if (err) {
+        if (err.code == "EBADCSRFTOKEN") {
+            req.flash("errors", "Cross site request forgery detected.")
+            req.session.save(() => res.redirect("/"))
+        } else {
+            res.render("404")
+        }
+    }
+})
 
 app.use("/", router)
 
